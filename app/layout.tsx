@@ -6,6 +6,9 @@ import Header from "@/components/navigation/header";
 import { SidebarInset } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
 import { AppSidebar } from "@/components/navigation/sidebar";
+import { AuthProvider } from "@/providers/auth-provider";
+import { createClient } from "@/lib/supabase/server";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -37,11 +40,15 @@ export const metadata: Metadata = {
 };
 
 
-export default function RootLayout({
+export default async function RootLayout({
     children,
 }: Readonly<{
     children: React.ReactNode;
 }>) {
+
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
     return (
         <html
             lang="en"
@@ -51,14 +58,20 @@ export default function RootLayout({
                 className={`${geistSans.variable} font-geist antialiased overflow-x-hidden`}
             >
                 <AppProviders>
-                    <AppSidebar />
-                    <SidebarInset>
-                        <Header />
-                        <Separator />
-                        <main className="flex flex-1 max-w-screen flex-col gap-4 p-0 pt-0 overflow-x-hidden">
-                            {children}
-                        </main>
-                    </SidebarInset>
+                    <AuthProvider initialUser={user}>
+
+                        <AppSidebar />
+                        <SidebarInset>
+                            <Header />
+                            <Separator />
+                            <ScrollArea className="h-[90vh]">
+
+                                <main className="flex flex-1 max-w-screen flex-col gap-4 p-0 pt-0 overflow-x-hidden">
+                                    {children}
+                                </main>
+                            </ScrollArea>
+                        </SidebarInset>
+                    </AuthProvider>
                 </AppProviders>
             </body>
         </html>

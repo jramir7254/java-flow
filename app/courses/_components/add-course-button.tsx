@@ -15,7 +15,7 @@ import {
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { enrollToCourse } from '@/lib/supabase/actions'
+import { enrollToCourse, enrollToCourse2 } from '@/lib/supabase/actions'
 import { toast } from 'sonner'
 
 export default function AddCourseButton() {
@@ -90,6 +90,7 @@ export default function AddCourseButton() {
 
                     {course && (
                         <div>
+                            <p>{course.id}</p>
                             <p>{course.name}</p>
                             <p>{course.course_code}</p>
                         </div>
@@ -99,7 +100,15 @@ export default function AddCourseButton() {
                         <Button onClick={() => setOpenInfo(false)} variant="outline">
                             Cancel
                         </Button>
-                        <Button onClick={() => toast.success('Enrolled')}>
+                        <Button onClick={async () => {
+                            try {
+                                await enrollToCourse2(course.id)
+                                toast.success('Enrolled')
+                            } catch (error) {
+                                toast.error(e?.message)
+
+                            }
+                        }}>
                             Confirm
                         </Button>
                     </DialogFooter>

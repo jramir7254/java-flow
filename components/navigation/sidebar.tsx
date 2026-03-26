@@ -35,6 +35,8 @@ import { logger } from "@/lib/logger";
 import Link from "next/link";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../ui/collapsible";
 import Avatar from "./avatar";
+import Footer from "./sidebar-footer";
+import { useAuth } from "@/providers/auth-provider";
 
 type Link = {
     name: string,
@@ -79,10 +81,11 @@ const matchPath = (pathname: string, link: string | undefined) => {
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     const pathname = usePathname();
+    const { user } = useAuth()
 
 
 
-    const isAuthed = !!true
+    const isAuthed = !!user
 
 
 
@@ -149,7 +152,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
             </SidebarContent>
             <SidebarFooter>
-                {/* <Footer /> */}
+                <Footer />
             </SidebarFooter>
         </Sidebar>
     )

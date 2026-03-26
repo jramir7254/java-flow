@@ -44,6 +44,9 @@ export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutR
                 email,
                 password,
                 options: {
+                    data: {
+                        school_id: String(epccId)
+                    },
                     emailRedirectTo: `${window.location.origin}/protected`,
                 },
             })

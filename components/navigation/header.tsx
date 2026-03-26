@@ -17,7 +17,6 @@ export default function Header() {
                     orientation="vertical"
                     className="mr-2 data-[orientation=vertical]:h-8"
                 />
-                <div>Sign in</div>
             </div>
             <div className="lg:ml-auto mr-5 lg:mr-10">
                 <ModeSwitch />
