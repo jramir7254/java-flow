@@ -43,7 +43,7 @@ export default async function CoursePage({
             </div>
 
             <div className='flex flex-col gap-2 max-w-2xl '>
-                {rootContents?.sort((a, b) => a?.order_id > b?.order_id)?.map(item => (
+                {rootContents?.sort((a, b) => a?.order_index < b?.order_index)?.map(item => (
                     <CourseItem key={item.id} item={item} />
                 ))}
             </div>
