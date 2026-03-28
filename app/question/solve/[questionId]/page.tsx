@@ -3,17 +3,17 @@ import { createClient } from '@/lib/supabase/server'
 import SolveWorkspace, { QuestionWithDetails } from './solve-workspace'
 
 export default async function SolvePage({
-  params,
+    params,
 }: {
-  params: Promise<{ questionId: string }>
+    params: Promise<{ questionId: string }>
 }) {
-  const { questionId } = await params
-  const supabase = await createClient()
+    const { questionId } = await params
+    const supabase = await createClient()
 
-  // TODO: error screen if not found
-  const { data, error } = await supabase
-    .from('question_details')
-    .select(`
+    // TODO: error screen if not found
+    const { data, error } = await supabase
+        .from('question_details')
+        .select(`
             id,
             instructions,
             ai_enabled,
@@ -42,17 +42,17 @@ export default async function SolvePage({
                 content
             )
         `)
-    .eq('id', questionId)
-    .single();
+        .eq('id', questionId)
+        .single();
 
-  if (error) {
-    return <div>Error: {error.message}</div>
-  }
+    if (error) {
+        return <div>Error: {error.message}</div>
+    }
 
-  const question = data as unknown as QuestionWithDetails
+    const question = data as unknown as QuestionWithDetails
 
-  return (
-    <SolveWorkspace questionInfo={question} />
-  )
+    return (
+        <SolveWorkspace questionInfo={question} />
+    )
 }
 
