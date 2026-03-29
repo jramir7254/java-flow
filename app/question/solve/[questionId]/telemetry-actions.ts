@@ -6,7 +6,11 @@ import { headers } from 'next/headers'
 
 type EventType = Database['public']['Enums']['event_type_enum']
 
+const DISABLE_TELEMETRY = process.env.DISABLE_TELEMETRY === 'true';
+
 export async function initTelemetrySession(questionId: string) {
+    if (DISABLE_TELEMETRY) return { success: true, sessionId: 'dev-session-disabled' }
+
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
 
@@ -46,6 +50,8 @@ export async function updateTelemetrySession(
         submission_attempts: number
     }
 ) {
+    if (DISABLE_TELEMETRY) return { success: true }
+
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return { success: false, error: 'Unauthorized' }
@@ -70,6 +76,8 @@ export async function updateTelemetrySession(
 }
 
 export async function flushTelemetryEvents(sessionId: string, events: any[]) {
+    if (DISABLE_TELEMETRY) return { success: true }
+
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return { success: false, error: 'Unauthorized' }

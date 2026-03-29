@@ -31,8 +31,8 @@ export default function InfoPane({ questionInfo, answer, aiEnabled, getLatestCod
     }
 
     return (
-        <div className="flex h-full w-full flex-col bg-background">
-            <Tabs defaultValue={tabItems[0].id} className="flex h-full w-full flex-col">
+        <div className="flex flex-1 w-full flex-col overflow-hidden bg-background min-h-0">
+            <Tabs defaultValue={tabItems[0].id} className="flex flex-1 w-full flex-col overflow-hidden min-h-0">
                 <div className="px-4 py-2 border-b">
                     <TabsList className="w-full justify-start">
                         {tabItems.map((tab) => (
@@ -44,9 +44,9 @@ export default function InfoPane({ questionInfo, answer, aiEnabled, getLatestCod
                 </div>
 
                 {questionInfo && (
-                    <TabsContent value="question" className="flex-1 m-0 focus-visible:outline-none overflow-hidden h-full">
-                        <ScrollArea className="h-full w-full">
-                            <div className="p-4 prose prose-sm dark:prose-invert max-w-none wrap-break-word w-full">
+                    <TabsContent value="question" className="flex-1 m-0 focus-visible:outline-none overflow-hidden min-h-0 flex flex-col">
+                        <ScrollArea className="flex-1 w-full">
+                            <div className="p-4 max-w-none w-full">
                                 <Markdown>{questionInfo}</Markdown>
                             </div>
                         </ScrollArea>
@@ -54,9 +54,9 @@ export default function InfoPane({ questionInfo, answer, aiEnabled, getLatestCod
                 )}
 
                 {answer && (
-                    <TabsContent value="answer" className="flex-1 m-0 focus-visible:outline-none overflow-hidden h-full">
-                        <ScrollArea className="h-full w-full">
-                            <div className="p-4 prose prose-sm dark:prose-invert max-w-none wrap-break-word w-full">
+                    <TabsContent value="answer" className="flex-1 m-0 focus-visible:outline-none overflow-hidden min-h-0 flex flex-col">
+                        <ScrollArea className="flex-1 w-full">
+                            <div className="p-4 max-w-none w-full">
                                 <Markdown>{answer}</Markdown>
                             </div>
                         </ScrollArea>
@@ -64,8 +64,8 @@ export default function InfoPane({ questionInfo, answer, aiEnabled, getLatestCod
                 )}
 
                 {aiEnabled && (
-                    <TabsContent value="ai" className="flex-1 m-0 focus-visible:outline-none overflow-hidden h-full relative">
-                        <AiChatPane 
+                    <TabsContent value="ai" className="flex-1 m-0 focus-visible:outline-none overflow-hidden min-h-0 flex flex-col">
+                        <AiChatPane
                             instructions={questionInfo}
                             getLatestCode={getLatestCode}
                             chatMessages={chatMessages}

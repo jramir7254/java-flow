@@ -81,7 +81,7 @@ export default function SolveWorkspace({ questionInfo }: { questionInfo: Questio
     }
 
     return (
-        <div className=" flex h-full flex-col overflow-hidden bg-background">
+        <div className="flex h-full w-full flex-col overflow-hidden bg-background min-h-0">
             {/* Top Bar */}
             <div className="flex shrink-0 items-center justify-between border-b p-2">
                 <div className="flex flex-1 items-center justify-start gap-3">
@@ -115,9 +115,9 @@ export default function SolveWorkspace({ questionInfo }: { questionInfo: Questio
             </div>
 
             {/* Main Split Layout */}
-            <div className="flex-1 overflow-hidden">
+            <div className="flex-1 overflow-hidden min-h-0 relative">
                 <ResizablePanelGroup orientation="horizontal">
-                    <ResizablePanel defaultSize="30" minSize="20">
+                    <ResizablePanel defaultSize="30" minSize="20" className="flex flex-col">
                         <InfoPane
                             questionInfo={questionInfo?.instructions}
                             answer={questionInfo?.answers?.[0]?.content}

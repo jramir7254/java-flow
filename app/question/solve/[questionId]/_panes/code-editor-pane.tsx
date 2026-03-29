@@ -57,7 +57,7 @@ export default function CodeEditorPane({ codeFiles, onFilesChange }: CodeEditorP
                 } else if (change.text.length > 0 && change.rangeLength > 0) {
                     action = 'replace'; // highlighted and typing over it
                 }
-                telemetry?.track('TEXT_EDIT', { // TODO: update to text_edit
+                telemetry?.track('TEXT_EDIT', {
                     source: 'editor',
                     file_id: file.id,
                     file_name: file.name,

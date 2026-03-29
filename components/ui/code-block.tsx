@@ -13,7 +13,8 @@ function CodeBlock({ children, className, ...props }: CodeBlockProps) {
   return (
     <div
       className={cn(
-        "not-prose flex w-full flex-col overflow-clip border",
+        // min-w-0 prevents flexbox layout blowouts when shrinking
+        "not-prose flex w-full min-w-0 flex-col overflow-clip border my-4",
         "border-border bg-card text-card-foreground rounded-xl",
         className
       )}
@@ -41,24 +42,35 @@ function CodeBlockCode({
   const [highlightedHtml, setHighlightedHtml] = useState<string | null>(null)
 
   useEffect(() => {
+    let isMounted = true;
     async function highlight() {
       if (!code) {
-        setHighlightedHtml("<pre><code></code></pre>")
+        if (isMounted) setHighlightedHtml("<pre><code></code></pre>")
         return
       }
 
-      const html = await codeToHtml(code, { lang: language, theme })
-      setHighlightedHtml(html)
+      try {
+        const html = await codeToHtml(code, { lang: language, theme })
+        if (isMounted) setHighlightedHtml(html)
+      } catch (error) {
+        // Fallback if language is unsupported by shiki
+        if (isMounted) setHighlightedHtml(`<pre><code>${code}</code></pre>`)
+      }
     }
     highlight()
+
+    return () => { isMounted = false }
   }, [code, language, theme])
 
   const classNames = cn(
-    "w-full overflow-x-auto text-[13px] [&>pre]:px-4 [&>pre]:py-4",
+    "w-full overflow-x-auto text-[13px]",
+    "[&>pre]:px-4 [&>pre]:py-4 [&>pre]:whitespace-pre-wrap [&>pre]:break-words [&>pre]:bg-transparent",
+
+    // if we decide to use scrolling instead of wrapping, use this:
+    // "[&>pre]:px-4 [&>pre]:py-4 [&>pre]:min-w-max [&>pre]:bg-transparent",
     className
   )
 
-  // SSR fallback: render plain code if not hydrated yet
   return highlightedHtml ? (
     <div
       className={classNames}
@@ -83,7 +95,7 @@ function CodeBlockGroup({
 }: CodeBlockGroupProps) {
   return (
     <div
-      className={cn("flex items-center justify-between", className)}
+      className={cn("flex items-center justify-between px-4 py-2 border-b border-border bg-muted/50", className)}
       {...props}
     >
       {children}

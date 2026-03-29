@@ -56,7 +56,7 @@ export default async function RootLayout({
             suppressHydrationWarning
         >
             <body
-                className={`${geistSans.variable} font-geist antialiased overflow-x-hidden`}
+                className={`${geistSans.variable} font-geist antialiased overflow-hidden h-dvh flex flex-col`}
             >
                 <AppProviders>
                     <AuthProvider initialUser={user}>

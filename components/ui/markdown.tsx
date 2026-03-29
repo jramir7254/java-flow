@@ -1,6 +1,5 @@
 import { cn } from "@/lib/utils"
-import { marked } from "marked"
-import { memo, useId, useMemo } from "react"
+import { memo } from "react"
 import ReactMarkdown, { Components } from "react-markdown"
 import remarkBreaks from "remark-breaks"
 import remarkGfm from "remark-gfm"
@@ -8,37 +7,95 @@ import { CodeBlock, CodeBlockCode } from "./code-block"
 
 export type MarkdownProps = {
   children: string
-  id?: string
   className?: string
   components?: Partial<Components>
 }
 
-function parseMarkdownIntoBlocks(markdown: string): string[] {
-  const tokens = marked.lexer(markdown)
-  return tokens.map((token) => token.raw)
-}
-
-function extractLanguage(className?: string): string {
-  if (!className) return "plaintext"
-  const match = className.match(/language-(\w+)/)
-  return match ? match[1] : "plaintext"
-}
-
 const INITIAL_COMPONENTS: Partial<Components> = {
+  h1: ({ children, ...props }) => <h1 {...props} className="text-3xl font-bold mt-8 mb-4 tracking-tight">{children}</h1>,
+  h2: ({ children, ...props }) => <h2 {...props} className="text-2xl font-bold mt-8 mb-4 tracking-tight border-b pb-2 border-border">{children}</h2>,
+  h3: ({ children, ...props }) => <h3 {...props} className="text-xl font-semibold mt-6 mb-3 tracking-tight">{children}</h3>,
+  h4: ({ children, ...props }) => <h4 {...props} className="text-lg font-semibold mt-6 mb-3 tracking-tight">{children}</h4>,
+  h5: ({ children, ...props }) => <h5 {...props} className="text-base font-semibold mt-4 mb-2 tracking-tight">{children}</h5>,
+  h6: ({ children, ...props }) => <h6 {...props} className="text-sm font-semibold mt-4 mb-2 tracking-tight text-muted-foreground">{children}</h6>,
+
   p: function PComponent({ className, children, ...props }) {
-    return <div {...props} className={cn("mb-2 last:mb-0", className)}>{children}</div>
+    return <p {...props} className={cn("mb-5 leading-7", className)}>{children}</p>
   },
-  code: function CodeComponent({ className, children, ...props }) {
-    const isInline =
-      (props as any).inline ??
-      (!props.node?.position?.start.line ||
-        props.node?.position?.start.line === props.node?.position?.end.line)
+
+  a: ({ className, children, ...props }) => (
+    <a {...props} className={cn("font-medium text-primary underline underline-offset-4 decoration-primary/50 hover:decoration-primary", className)}>
+      {children}
+    </a>
+  ),
+
+  ul: ({ className, children, ...props }) => (
+    <ul {...props} className={cn("my-5 ml-6 list-disc [&>li]:mt-2", className)}>
+      {children}
+    </ul>
+  ),
+
+  ol: ({ className, children, ...props }) => (
+    <ol {...props} className={cn("my-5 ml-6 list-decimal [&>li]:mt-2", className)}>
+      {children}
+    </ol>
+  ),
+
+  li: ({ className, children, ...props }) => (
+    <li {...props} className={cn("leading-7", className)}>
+      {children}
+    </li>
+  ),
+
+  blockquote: ({ className, children, ...props }) => (
+    <blockquote {...props} className={cn("mt-6 mb-4 border-l-4 border-primary pl-4 italic text-muted-foreground", className)}>
+      {children}
+    </blockquote>
+  ),
+
+  hr: ({ ...props }) => <hr {...props} className="my-8 border-border" />,
+
+  table: ({ className, children, ...props }) => (
+    <div className="my-6 w-full overflow-y-auto">
+      <table {...props} className={cn("w-full", className)}>
+        {children}
+      </table>
+    </div>
+  ),
+
+  tr: ({ className, children, ...props }) => (
+    <tr {...props} className={cn("m-0 border-t border-border p-0 even:bg-muted/50", className)}>
+      {children}
+    </tr>
+  ),
+
+  th: ({ className, children, ...props }) => (
+    <th {...props} className={cn("border border-border px-4 py-2 text-left font-bold [[align=center]]:text-center [[align=right]]:text-right", className)}>
+      {children}
+    </th>
+  ),
+
+  td: ({ className, children, ...props }) => (
+    <td {...props} className={cn("border border-border px-4 py-2 text-left [[align=center]]:text-center [[align=right]]:text-right", className)}>
+      {children}
+    </td>
+  ),
+
+  strong: ({ className, children, ...props }) => (
+    <strong {...props} className={cn("font-semibold", className)}>
+      {children}
+    </strong>
+  ),
+
+  code({ node, inline, className, children, ...props }: any) {
+    const match = /language-(\w+)/.exec(className || "")
+    const isInline = inline || !match
 
     if (isInline) {
       return (
         <code
           className={cn(
-            "bg-secondary text-secondary-foreground rounded-md px-1.5 py-0.5 font-mono text-sm",
+            "relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold",
             className
           )}
           {...props}
@@ -48,66 +105,37 @@ const INITIAL_COMPONENTS: Partial<Components> = {
       )
     }
 
-    const language = extractLanguage(className)
+    const language = match ? match[1] : "plaintext"
 
     return (
       <CodeBlock className={className}>
-        <CodeBlockCode code={children as string} language={language} />
+        <CodeBlockCode code={String(children).replace(/\n$/, "")} language={language} />
       </CodeBlock>
     )
-  },
-  pre: function PreComponent({ children }) {
-    return <>{children}</>
-  },
+  }
 }
 
-const MemoizedMarkdownBlock = memo(
-  function MarkdownBlock({
-    content,
-    components = INITIAL_COMPONENTS,
-  }: {
-    content: string
-    components?: Partial<Components>
-  }) {
-    return (
+function MarkdownComponent({
+  children,
+  className,
+  components = INITIAL_COMPONENTS,
+}: MarkdownProps) {
+  return (
+    <div
+      className={cn(
+        "w-full min-w-0 text-foreground",
+        className
+      )}
+    >
       <ReactMarkdown
         remarkPlugins={[remarkGfm, remarkBreaks]}
         components={components}
       >
-        {content}
+        {children}
       </ReactMarkdown>
-    )
-  },
-  function propsAreEqual(prevProps, nextProps) {
-    return prevProps.content === nextProps.content
-  }
-)
-
-MemoizedMarkdownBlock.displayName = "MemoizedMarkdownBlock"
-
-function MarkdownComponent({
-  children,
-  id,
-  className,
-  components = INITIAL_COMPONENTS,
-}: MarkdownProps) {
-  const generatedId = useId()
-  const blockId = id ?? generatedId
-  const blocks = useMemo(() => parseMarkdownIntoBlocks(children), [children])
-
-  return (
-    <div className={className}>
-      {blocks.map((block, index) => (
-        <MemoizedMarkdownBlock
-          key={`${blockId}-block-${index}`}
-          content={block}
-          components={components}
-        />
-      ))}
     </div>
   )
 }
-
 const Markdown = memo(MarkdownComponent)
 Markdown.displayName = "Markdown"
 
