@@ -19,8 +19,7 @@ import {
 } from "@/components/ui/prompt-input"
 import { Button } from "@/components/ui/button"
 import { ArrowUp, Square, Trash } from "lucide-react"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { useTelemetry } from "@/components/providers/telemetry-provider"
+import { useTelemetry } from "@/providers/telemetry-provider"
 
 interface AiChatPaneProps {
     instructions?: string;
@@ -146,51 +145,48 @@ export default function AiChatPane({ instructions, getLatestCode, chatMessages =
     }
 
     return (
-        <div className="flex h-full w-full flex-col overflow-hidden relative">
-            <ScrollArea>
+        <div className="flex flex-col h-full min-h-0">
+            <ChatContainerRoot className="flex-1 min-h-0">
+                <ChatContainerContent className="space-y-4 p-4 pb-[120px]">
+                    {chatMessages.length === 0 && (
+                        <div className="flex h-full flex-col items-center justify-center p-8 text-center text-muted-foreground mt-[15%]">
+                            <p>Hello! Ask me anything about this code question.</p>
+                        </div>
+                    )}
 
-                <ChatContainerRoot className="flex-1 overflow-y-auto">
-                    <ChatContainerContent className="space-y-4 p-4 pb-[120px]">
-                        {chatMessages.length === 0 && (
-                            <div className="flex h-full flex-col items-center justify-center p-8 text-center text-muted-foreground mt-[15%]">
-                                <p>Hello! Ask me anything about this code question.</p>
-                            </div>
-                        )}
+                    {chatMessages.map((message) => {
+                        const isAssistant = message.role === "assistant"
 
-                        {chatMessages.map((message) => {
-                            const isAssistant = message.role === "assistant"
-
-                            return (
-                                <Message
-                                    key={message.id}
-                                    className={message.role === "user" ? "justify-end" : "justify-start"}
-                                >
-                                    {isAssistant && (
-                                        <MessageAvatar
-                                            src="/avatars/ai.png"
-                                            alt="AI Assistant"
-                                            fallback="AI"
-                                        />
+                        return (
+                            <Message
+                                key={message.id}
+                                className={message.role === "user" ? "justify-end" : "justify-start"}
+                            >
+                                {isAssistant && (
+                                    <MessageAvatar
+                                        src="/avatars/ai.png"
+                                        alt="AI Assistant"
+                                        fallback="AI"
+                                    />
+                                )}
+                                <div className="max-w-[85%] flex-1 sm:max-w-[75%] min-w-0">
+                                    {isAssistant ? (
+                                        <div className="bg-secondary text-foreground prose prose-sm dark:prose-invert rounded-lg p-3 max-w-none overflow-x-auto">
+                                            <Markdown>{message.content}</Markdown>
+                                        </div>
+                                    ) : (
+                                        <MessageContent className="bg-primary text-primary-foreground text-sm">
+                                            {message.content}
+                                        </MessageContent>
                                     )}
-                                    <div className="max-w-[85%] flex-1 sm:max-w-[75%]">
-                                        {isAssistant ? (
-                                            <div className="bg-secondary text-foreground prose dark:prose-invert rounded-lg p-3 text-sm max-w-none wrap-break-word">
-                                                <Markdown>{message.content}</Markdown>
-                                            </div>
-                                        ) : (
-                                            <MessageContent className="bg-primary text-primary-foreground text-sm">
-                                                {message.content}
-                                            </MessageContent>
-                                        )}
-                                    </div>
-                                </Message>
-                            )
-                        })}
-                    </ChatContainerContent>
-                </ChatContainerRoot>
-            </ScrollArea>
+                                </div>
+                            </Message>
+                        )
+                    })}
+                </ChatContainerContent>
+            </ChatContainerRoot>
 
-            <div className="absolute bottom-0 left-0 right-0 border-t bg-background p-4 flex justify-center w-full">
+            <div className="border-t bg-background p-4 flex justify-center w-full shrink-0">
                 <PromptInput
                     value={input}
                     onValueChange={handleValueChange}
@@ -211,7 +207,7 @@ export default function AiChatPane({ instructions, getLatestCode, chatMessages =
                                 <Trash className="size-4" />
                             </Button>
                         </PromptInputAction>
-                        
+
                         <PromptInputAction
                             tooltip={isLoading ? "Stop generation" : "Send message"}
                         >

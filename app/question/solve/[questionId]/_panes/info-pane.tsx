@@ -3,7 +3,6 @@
 import React from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Markdown } from '@/components/ui/markdown';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import AiChatPane from './ai-chat';
 
 interface InfoPaneProps {
@@ -44,27 +43,19 @@ export default function InfoPane({ questionInfo, answer, aiEnabled, getLatestCod
                 </div>
 
                 {questionInfo && (
-                    <TabsContent value="question" className="flex-1 m-0 focus-visible:outline-none overflow-hidden min-h-0 flex flex-col">
-                        <ScrollArea className="flex-1 w-full">
-                            <div className="p-4 max-w-none w-full">
-                                <Markdown>{questionInfo}</Markdown>
-                            </div>
-                        </ScrollArea>
+                    <TabsContent value="question" className="flex-1 m-0 mt-2 px-4 overflow-y-auto min-h-0">
+                        <Markdown>{questionInfo}</Markdown>
                     </TabsContent>
                 )}
 
                 {answer && (
-                    <TabsContent value="answer" className="flex-1 m-0 focus-visible:outline-none overflow-hidden min-h-0 flex flex-col">
-                        <ScrollArea className="flex-1 w-full">
-                            <div className="p-4 max-w-none w-full">
-                                <Markdown>{answer}</Markdown>
-                            </div>
-                        </ScrollArea>
+                    <TabsContent value="answer" className="flex-1 m-0 mt-2 px-4 overflow-y-auto min-h-0">
+                        <Markdown>{answer}</Markdown>
                     </TabsContent>
                 )}
 
                 {aiEnabled && (
-                    <TabsContent value="ai" className="flex-1 m-0 focus-visible:outline-none overflow-hidden min-h-0 flex flex-col">
+                    <TabsContent value="ai" className="flex-1 m-0 focus-visible:outline-none overflow-auto min-h-0 flex flex-col">
                         <AiChatPane
                             instructions={questionInfo}
                             getLatestCode={getLatestCode}

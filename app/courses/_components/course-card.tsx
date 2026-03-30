@@ -43,7 +43,7 @@ export default function CourseCard({ course }: { course: Course }) {
                     <Badge variant="secondary">{course.course_code}</Badge>
                 </CardAction>
                 <CardTitle>{course.name}</CardTitle>
-                <CardDescription>{course.description}</CardDescription>
+                <CardDescription className="line-clamp-3">{course.description ?? "No description"}</CardDescription>
             </CardHeader>
             <CardFooter>
                 <Button className="w-full" onClick={handleClick}>

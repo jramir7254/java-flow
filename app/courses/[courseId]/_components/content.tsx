@@ -10,6 +10,8 @@ import {
 import { ContentItem } from '@/types'
 import { getFileContents } from '@/lib/supabase/actions';
 import Link from 'next/link';
+import { Markdown } from "@/components/ui/markdown";
+import { Separator } from "@/components/ui/separator";
 
 export default function Content({ children, content }: { children: React.ReactNode, content: ContentItem }) {
     const [fileText, setFileText] = React.useState('');
@@ -37,14 +39,14 @@ export default function Content({ children, content }: { children: React.ReactNo
                     {children}
                 </div>
             </SheetTrigger>
-            <SheetContent className='min-w-[80vw]'>
+            <SheetContent className='min-w-[80vw] overflow-y-auto pt-6 pl-4 '>
                 <SheetHeader>
-                    <SheetTitle>{content.name} {content.order_index}</SheetTitle>
-                    <SheetDescription>{content.type}</SheetDescription>
-                    <div>
-                        {fileText}
-                    </div>
+                    <SheetTitle className="text-3xl font-bold">{content.name}</SheetTitle>
                 </SheetHeader>
+                <Separator />
+                <div className="pl-4 max-w-3xl">
+                    <Markdown>{fileText}</Markdown>
+                </div>
             </SheetContent>
         </Sheet>
     )

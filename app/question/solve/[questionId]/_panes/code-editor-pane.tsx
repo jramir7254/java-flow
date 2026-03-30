@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react'
 import { Tables } from '@/types/supabase'
 import { FullEditor, CodeFile } from '@/components/code-editor/full-editor'
 import type * as Monaco from 'monaco-editor';
-import { useTelemetry } from '@/components/providers/telemetry-provider';
+import { useTelemetry } from '@/providers/telemetry-provider';
 
 interface CodeEditorPaneProps {
     codeFiles?: Tables<"code_files">[];

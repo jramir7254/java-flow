@@ -2,7 +2,7 @@ import React from 'react'
 import { createClient } from '@/lib/supabase/server'
 import SolveWorkspace, { QuestionWithDetails } from './solve-workspace'
 
-import { TelemetryProvider } from '@/components/providers/telemetry-provider'
+import { TelemetryProvider } from '@/providers/telemetry-provider'
 
 export default async function SolvePage({
     params,

@@ -2,10 +2,6 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Nunito, Open_Sans, Inter } from "next/font/google";
 import AppProviders from "@/providers";
 import "./globals.css";
-import Header from "@/components/navigation/header";
-import { SidebarInset } from "@/components/ui/sidebar";
-import { Separator } from "@/components/ui/separator";
-import { AppSidebar } from "@/components/navigation/sidebar";
 import { AuthProvider } from "@/providers/auth-provider";
 import { createClient } from "@/lib/supabase/server";
 import { TooltipProvider } from "@/components/ui/tooltip"
@@ -61,16 +57,7 @@ export default async function RootLayout({
                 <AppProviders>
                     <AuthProvider initialUser={user}>
                         <TooltipProvider>
-
-                            <AppSidebar />
-                            <SidebarInset>
-                                <Header />
-                                <Separator />
-
-                                <main className="flex flex-1 flex-col overflow-hidden">
-                                    {children}
-                                </main>
-                            </SidebarInset>
+                            {children}
                         </TooltipProvider>
                     </AuthProvider>
                 </AppProviders>

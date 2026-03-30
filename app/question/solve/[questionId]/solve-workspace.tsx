@@ -9,6 +9,8 @@ import {
 import { Home, Settings, Play } from 'lucide-react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
+import { AppHeader } from '@/components/ui/app-header'
+import { Separator } from '@/components/ui/separator'
 
 import InfoPane from './_panes/info-pane'
 import CodeEditorPane from './_panes/code-editor-pane'
@@ -16,7 +18,7 @@ import TestCasesPane, { SubmitResult } from './_panes/test-cases-pane'
 import { submitSolution } from './actions'
 import { CodeFile } from '@/components/code-editor/full-editor'
 import { Tables } from '@/types/supabase'
-import { useTelemetry } from '@/components/providers/telemetry-provider'
+import { useTelemetry } from '@/providers/telemetry-provider'
 import { useEffect } from 'react'
 
 export type QuestionWithDetails = Tables<"question_details"> & {
@@ -81,38 +83,40 @@ export default function SolveWorkspace({ questionInfo }: { questionInfo: Questio
     }
 
     return (
-        <div className="flex h-full w-full flex-col overflow-hidden bg-background min-h-0">
-            {/* Top Bar */}
-            <div className="flex shrink-0 items-center justify-between border-b p-2">
-                <div className="flex flex-1 items-center justify-start gap-3">
-                    <Button variant="ghost" size="icon" asChild>
-                        <Link href="/dashboard">
-                            <Home className="h-5 w-5" />
-                        </Link>
-                    </Button>
-                    <div className="h-6 w-px bg-border"></div>
-                    <h5 className="text-sm font-semibold truncate">
-                        {questionInfo?.content_item?.name || "Loading..."}
-                    </h5>
-                </div>
-
-                <div className="flex flex-1 items-center justify-center gap-3">
+        <div className="flex flex-1 w-full bg-sidebar">
+            <div className="flex flex-1 w-full flex-col overflow-hidden bg-background md:m-2 md:rounded-xl md:shadow-sm border border-border min-h-0 relative">
+                {/* Top Bar */}
+            <AppHeader
+                className="border-b"
+                left={
+                    <>
+                        <Button variant="ghost" size="icon" asChild className="h-8 w-8">
+                            <Link href="/courses">
+                                <Home className="h-5 w-5" />
+                            </Link>
+                        </Button>
+                        <Separator orientation="vertical" className="mx-2 h-6" />
+                        <h5 className="text-lg font-semibold truncate">
+                            {questionInfo?.content_item?.name || "Loading..."}
+                        </h5>
+                    </>
+                }
+                center={
                     <Button
                         onClick={handleRun}
                         disabled={isSubmitting}
-                        className="gap-2"
+                        className="gap-2 h-8"
                     >
                         <Play className="h-4 w-4 fill-current" />
                         RUN
                     </Button>
-                </div>
-
-                <div className="flex flex-1 items-center justify-end gap-3">
-                    <Button variant="ghost" size="icon">
+                }
+                right={
+                    <Button variant="ghost" size="icon" className="h-8 w-8">
                         <Settings className="h-5 w-5" />
                     </Button>
-                </div>
-            </div>
+                }
+            />
 
             {/* Main Split Layout */}
             <div className="flex-1 overflow-hidden min-h-0 relative">
@@ -154,6 +158,7 @@ export default function SolveWorkspace({ questionInfo }: { questionInfo: Questio
                     </ResizablePanel>
                 </ResizablePanelGroup>
             </div>
+        </div>
         </div>
     )
 }
