@@ -2,6 +2,7 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { createClient } from '@/lib/supabase/server'
 import React from 'react'
 import { CourseItem } from './_components/content-item'
+import { Separator } from '@/components/ui/separator'
 
 export default async function CoursePage({
     params,
@@ -37,11 +38,6 @@ export default async function CoursePage({
 
     return (
         <ScrollArea className='h-full max-h-[90vh] p-6'>
-            <div className="mb-8">
-                <h1 className="text-3xl font-bold">{course?.name}</h1>
-                <p className="text-muted-foreground">{course?.course_code}</p>
-            </div>
-
             <div className='flex flex-col gap-2 max-w-2xl '>
                 {rootContents?.sort((a, b) => a?.order_index < b?.order_index)?.map(item => (
                     <CourseItem key={item.id} item={item} />

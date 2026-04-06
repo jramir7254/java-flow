@@ -6,11 +6,20 @@ import {
 
     Home,
 
-    CircleUserRound,
     type LucideIcon,
-    CircuitBoard
+    CircuitBoard,
+    LogOut
 
 } from "lucide-react"
+
+import {
+    DropdownMenu,
+    DropdownMenuTrigger,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu"
 
 
 import {
@@ -29,13 +38,13 @@ import {
     SidebarMenuSubItem,
     SidebarSeparator,
 } from "@/components/ui/sidebar"
-import { usePathname, } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 
 import { logger } from "@/lib/logger";
 import Link from "next/link";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../ui/collapsible";
 import Avatar from "./avatar";
-import Footer from "./sidebar-footer";
+import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "@/providers/auth-provider";
 
 type Link = {
@@ -49,29 +58,14 @@ type Link = {
 
 const links: Link[] = [
     {
-        name: "Home",
-        icon: Home,
-        link: "/",
-        requireAuth: false,
-    },
-    {
-        name: "Account",
-
-        icon: CircleUserRound,
-
-        link: "/protected",
-        requireAuth: true,
-    },
-    {
         name: "Courses",
 
-        icon: CircuitBoard,
+        icon: Home,
 
         link: "/courses",
         requireAuth: true,
     }
 ]
-
 
 const matchPath = (pathname: string, link: string | undefined) => {
     if (!link) return false
@@ -79,14 +73,18 @@ const matchPath = (pathname: string, link: string | undefined) => {
 }
 
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+export function AppSidebar({ role, enrolledCourses = [], ...props }: React.ComponentProps<typeof Sidebar> & { role?: string, enrolledCourses?: any[] }) {
     const pathname = usePathname();
+    const router = useRouter();
     const { user } = useAuth()
 
-
+    const handleLogout = async () => {
+        const supabase = createClient()
+        await supabase.auth.signOut()
+        router.push('/auth/login')
+    }
 
     const isAuthed = !!user
-
 
 
 
@@ -95,9 +93,19 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             <SidebarHeader>
                 <SidebarMenu>
                     <SidebarMenuItem>
-                        <SidebarMenuButton size="lg" asChild>
-                            <Avatar />
-                        </SidebarMenuButton>
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Avatar role={role} />
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent side="right" align="start" className="w-[--radix-dropdown-menu-content-width] min-w-56">
+                                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem onClick={handleLogout} className="text-destructive focus:bg-destructive focus:text-destructive-foreground cursor-pointer">
+                                    <LogOut className="mr-2 h-4 w-4" />
+                                    <span>Logout</span>
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
                     </SidebarMenuItem>
                 </SidebarMenu>
             </SidebarHeader>
@@ -105,8 +113,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 <SidebarGroup >
                     <SidebarGroupContent className="space-y-2">
                         {links.map(link => link.requireAuth && !isAuthed ? null : (
-                            // <SidebarGroup key={link.name}>
-                            //     <SidebarGroupContent>
                             <SidebarMenu key={link.name}>
                                 {link.children ?
                                     <Collapsible key={link.name}>
@@ -145,15 +151,29 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                                     </SidebarMenuItem>
                                 }
                             </SidebarMenu>
-
                         ))}
+
+                        {enrolledCourses.length > 0 && (
+                            <>
+                                <SidebarSeparator className="my-4" />
+                                <SidebarMenu className="gap-1 overflow-y-auto max-h-[40vh] min-h-0">
+                                    {enrolledCourses.map((course: any) => (
+                                        <SidebarMenuItem key={course.id}>
+                                            <SidebarMenuButton asChild isActive={matchPath(pathname, `/courses/${course.id}`)}>
+                                                <Link href={`/courses/${course.id}`}>
+                                                    <CircuitBoard className="shrink-0" />
+                                                    <span className="truncate">{course.name}</span>
+                                                </Link>
+                                            </SidebarMenuButton>
+                                        </SidebarMenuItem>
+                                    ))}
+                                </SidebarMenu>
+                            </>
+                        )}
                     </SidebarGroupContent>
                 </SidebarGroup>
 
             </SidebarContent>
-            <SidebarFooter>
-                <Footer />
-            </SidebarFooter>
         </Sidebar>
     )
 }

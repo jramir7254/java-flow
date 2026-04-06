@@ -2,17 +2,20 @@
 
 import React from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import Markdown from 'react-markdown';
-import { ScrollArea } from '@/components/ui/scroll-area'
+import { Markdown } from '@/components/ui/markdown';
+import AiChatPane from './ai-chat';
 
 interface InfoPaneProps {
     questionInfo?: string;
     answer?: string;
     aiEnabled?: boolean;
+    getLatestCode?: () => any[];
+    chatMessages?: { id: string, role: string, content: string }[];
+    setChatMessages?: React.Dispatch<React.SetStateAction<{ id: string, role: string, content: string }[]>>;
 }
 // BUG: The markdown renderer text doesnt break words
 // TODO: Style the markdown renderer better
-export default function InfoPane({ questionInfo, answer, aiEnabled }: InfoPaneProps) {
+export default function InfoPane({ questionInfo, answer, aiEnabled, getLatestCode, chatMessages, setChatMessages }: InfoPaneProps) {
     const tabItems = [];
     if (questionInfo) tabItems.push({ id: 'question', title: 'Question' });
     if (answer) tabItems.push({ id: 'answer', title: 'Answer' });
@@ -27,8 +30,8 @@ export default function InfoPane({ questionInfo, answer, aiEnabled }: InfoPanePr
     }
 
     return (
-        <div className="flex h-full w-full flex-col bg-background">
-            <Tabs defaultValue={tabItems[0].id} className="flex h-full w-full flex-col">
+        <div className="flex flex-1 w-full flex-col overflow-hidden bg-background min-h-0">
+            <Tabs defaultValue={tabItems[0].id} className="flex flex-1 w-full flex-col overflow-hidden min-h-0">
                 <div className="px-4 py-2 border-b">
                     <TabsList className="w-full justify-start">
                         {tabItems.map((tab) => (
@@ -40,30 +43,25 @@ export default function InfoPane({ questionInfo, answer, aiEnabled }: InfoPanePr
                 </div>
 
                 {questionInfo && (
-                    <TabsContent value="question" className="flex-1 m-0 focus-visible:outline-none overflow-hidden h-full">
-                        <ScrollArea className="h-full w-full">
-                            <div className="p-4 prose prose-sm dark:prose-invert max-w-none break-words w-full">
-                                <Markdown>{questionInfo}</Markdown>
-                            </div>
-                        </ScrollArea>
+                    <TabsContent value="question" className="flex-1 m-0 mt-2 px-4 overflow-y-auto min-h-0">
+                        <Markdown>{questionInfo}</Markdown>
                     </TabsContent>
                 )}
 
                 {answer && (
-                    <TabsContent value="answer" className="flex-1 m-0 focus-visible:outline-none overflow-hidden h-full">
-                        <ScrollArea className="h-full w-full">
-                            <div className="p-4 prose prose-sm dark:prose-invert max-w-none break-words w-full">
-                                <Markdown>{answer}</Markdown>
-                            </div>
-                        </ScrollArea>
+                    <TabsContent value="answer" className="flex-1 m-0 mt-2 px-4 overflow-y-auto min-h-0">
+                        <Markdown>{answer}</Markdown>
                     </TabsContent>
                 )}
 
                 {aiEnabled && (
-                    <TabsContent value="ai" className="flex-1 m-0 focus-visible:outline-none overflow-hidden h-full">
-                        <div className="flex h-full w-full flex-col items-center justify-center text-muted-foreground p-4">
-                            ai chat
-                        </div>
+                    <TabsContent value="ai" className="flex-1 m-0 focus-visible:outline-none overflow-auto min-h-0 flex flex-col">
+                        <AiChatPane
+                            instructions={questionInfo}
+                            getLatestCode={getLatestCode}
+                            chatMessages={chatMessages}
+                            setChatMessages={setChatMessages}
+                        />
                     </TabsContent>
                 )}
             </Tabs>
